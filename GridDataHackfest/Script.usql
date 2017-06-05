@@ -1,0 +1,32 @@
+﻿DECLARE @INPUT_FILE string = @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest5.csv";
+
+@DiscData = 
+    EXTRACT 
+        incidentRSef string,
+        client string,
+        relatedSite string,
+        siteName string,
+        country string,
+        relatedSpv string,
+        spv string,
+        incident string,
+        incidentType string,
+        description string,
+        open string,
+        status string,
+        assignedUser string,
+        area string,
+        incidentDate DateTime,
+        endData DateTime,
+        comments string,
+        notes string,
+        gridDisconnectionStartDate DateTime,
+        gridDisconnectionEndDate DateTime,
+        gridDisconnectionDuration string,
+        gridDisconnectionScheduled string,
+        totalProductionLoses string
+    FROM @INPUT_FILE USING Extractors.Csv(encoding: Encoding.UTF8, silent: true);
+
+OUTPUT @DiscData
+TO @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest Extracted.csv"
+USING Outputters.Csv();

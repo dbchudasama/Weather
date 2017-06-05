@@ -1,1 +1,97 @@
-﻿
+﻿REFERENCE ASSEMBLY [Microsoft.Analytics.Samples.Formats]; 
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+
+DECLARE @INPUT_FILE string = @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\weather.json";
+                           
+@weatherjson =
+    EXTRACT
+        latitude string,
+        longitude string,
+        timezone string,
+        offset string,
+        currently string,
+        hourly string,
+        daily string,
+        plantName string,
+        plantId string,
+        weatherDate string
+    FROM @INPUT_FILE USING new Microsoft.Analytics.Samples.Formats.Json.JsonExtractor();
+
+
+ @weathertuple = SELECT latitude AS latitude,
+                        longitude AS longitude,
+                        timezone AS timezone,
+                        offset AS offset,
+                        Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(currently) AS currently,
+                        Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(hourly, "summary", "icon") AS hourly,
+                        Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(hourly, "data[*]").Values AS hourly_array,
+                        Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(daily, "data[*]").Values AS daily_array,
+                        plantName AS plantName,
+                        plantId AS plantId,
+                        weatherDate AS weatherDate
+                 FROM @weatherjson;
+                
+//Flattening out the JSON Objects making it easy to read
+@weatherflatten = SELECT latitude AS latitudeValue,
+                         longitude AS longitudeValue,
+                         timezone AS timezoneValue,
+                         offset AS offsetValue,
+                         currently["temperature"] AS temperatureValue,
+                         currently["apparentTemperature"] AS apparentTemperatureValue,
+                         currently["time"] AS currentlyValue,
+                         currently["summary"] AS summaryValue,
+                         currently["icon"] AS iconValue,
+                         currently["precipType"] AS precipTypeValue,
+                         currently["dewPoint"] AS dewPointValue,
+                         currently["humidity"] AS humidityValue,
+                         currently["windSpeed"] AS windSpeedValue,
+                         currently["windBearing"] AS windBearingValue,
+                         currently["visibility"] AS visibilityValue,
+                         currently["cloudCover"] AS cloudCoverValue,
+                         currently["pressure"] AS pressureValue,
+                         hourly["summary"] AS hourlySummaryValue,
+                         hourly["icon"] AS hourlyIconValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["time"]AS hourlyTimeValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["summary"]AS hourlyDataSummaryValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["icon"] AS hourlyDataIconValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["precipType"] AS hourlyPrecipTypeValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["temperature"] AS hourlyTemperatureValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["apparentTemperature"] AS hourlyApparentTemperatureValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["dewPoint"] AS hourlyDewPointValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["humidity"] AS hourlyHumidityValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["windSpeed"] AS hourlyWindSpeedValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["windBearing"] AS hourlyWindBearingValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["visibility"] AS hourlyVisibilityValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(h_value) ["pressure"] AS hourlyPressureValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["time"] AS dailyTimeValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["summary"]AS dailySummaryValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["icon"] AS dailyIconValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["sunriseTime"] AS dailySunriseTimeValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["sunsetTime"] AS dailySunsetTimeValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["moonPhase"] AS dailyMoonPhaseValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["precipType"] AS dailyPrecipTypeValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["temperatureMin"] AS dailyTemperatureValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["temperatureMinTime"] AS dailyTemperatureMinTimeValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["temperatureMax"] AS dailyTemperatureMaxValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["temperatureMaxTime"] AS dailyTemperatureMaxTimeValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["apparentTemperatureMax"] AS dailyApparentTemperatureMaxValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["apparentTemperatureMaxTime"] AS dailyApparentTemperatureMsxTimeValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["dewPoint"] AS dailyDewPointValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["humidity"] AS dailyHumidityValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["windSpeed"] AS dailyWindSpeedValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["windBearing"] AS dailyWindBearingValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["visibility"] AS dailyVisibilityValue,
+                         Microsoft.Analytics.Samples.Formats.Json.JsonFunctions.JsonTuple(d_value) ["pressure"] AS dailyPressureValue,
+                         plantName AS plantNameValue,
+                         plantId AS plantIdValue,
+                         weatherDate AS weatherDateValue
+                  FROM @weathertuple
+                       CROSS APPLY 
+                            EXPLODE(hourly_array) AS t(h_value)
+                       CROSS APPLY
+                            EXPLODE(daily_array) AS T(d_value);
+                 
+OUTPUT @weatherflatten
+TO @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\weatherData.csv"
+USING Outputters.Csv(outputHeader: true, quoting : true);

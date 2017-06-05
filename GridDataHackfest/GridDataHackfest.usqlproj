@@ -3,12 +3,12 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>d7c6581d-608e-48da-92f0-7997b65f787e</ProjectGuid>
+    <ProjectGuid>0137e5ca-b72d-40ee-b531-fd6f6254583c</ProjectGuid>
     <OutputType>File</OutputType>
     <AssemblyName>Algebra.xml</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <Name>Weather</Name>
-    <RootNamespace>Weather</RootNamespace>
+    <Name>GridDataHackfest</Name>
+    <RootNamespace>GridDataHackfest</RootNamespace>
     <RuntimeVersion>default</RuntimeVersion>
     <OutputStreamPath>C:\Users\gujra\AppData\Local\USQLDataRoot</OutputStreamPath>
   </PropertyGroup>
@@ -25,13 +25,6 @@
     <ScriptCode Include="Script.usql.cs">
       <DependentUpon>Script.usql</DependentUpon>
     </ScriptCode>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\usql-master\usql-master\Examples\DataFormats\Microsoft.Analytics.Samples.Formats\Microsoft.Analytics.Samples.Formats.csproj">
-      <Name>Microsoft.Analytics.Samples.Formats</Name>
-      <Project>{1b3e7106-6d16-4b96-87c5-f15e18ffc08f}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />
 </Project>
