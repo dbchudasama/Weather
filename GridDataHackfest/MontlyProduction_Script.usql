@@ -1,0 +1,17 @@
+﻿DECLARE @INPUT_FILE string = @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest_Monthly_USE.csv";
+
+
+@MonthlyData =
+    EXTRACT
+        incident string,
+        [incident - client] string,
+        production string,
+        year string,
+        month string
+    FROM @INPUT_FILE USING Extractors.Csv(encoding: Encoding.UTF8, silent: true);
+
+@AnnualLosses = 
+    SELECT incident, 
+           [incident - client] AS incidentClient
+           
+    FROM @MonthlyData
