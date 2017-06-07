@@ -22,12 +22,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Script Include="MontlyProduction_Script.usql" />
-    <Script Include="Script.usql" />
+    <Script Include="Incidents_Script.usql" />
     <ScriptCode Include="MontlyProduction_Script.usql.cs">
       <DependentUpon>MontlyProduction_Script.usql</DependentUpon>
     </ScriptCode>
-    <ScriptCode Include="Script.usql.cs">
-      <DependentUpon>Script.usql</DependentUpon>
+    <ScriptCode Include="Incidents_Script.usql.cs">
+      <DependentUpon>Incidents_Script.usql</DependentUpon>
     </ScriptCode>
   </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />

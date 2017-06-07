@@ -19,9 +19,9 @@ namespace csvReader
             //Columns
             int numberOfColumns = 23;
 
-            string path = @"C:\Users\DivyeshB\Documents\Visual Studio 2017\Projects\csvReader\Grid Disconnection Data for Hackfest.csv";
+            string path = @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest_USE2.csv";
 
-            string newPath = @"C:\Users\DivyeshB\Documents\Visual Studio 2017\Projects\csvReader\Grid Disconnection Data for Hackfest_Reformatted.csv";
+            string newPath = @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest_Reformatted2.csv";
 
             //Reading in csv file using StreamReader
             using (StreamReader SR = new StreamReader(File.OpenRead(path)))
@@ -36,13 +36,18 @@ namespace csvReader
                     //Splitting lines based on delimiter
                     var split = line.Split('{');
 
+                    //Comparing
                     if (split.Length == numberOfColumns)
                     {
-                        using (StreamWriter SW = File.AppendText(newPath))
-                        {
-                            SW.WriteLine(String.Join("{", split));
-
-                        }
+                        Console.WriteLine(line);
+                        Console.ReadLine();
+                        ////Writing to File
+                        //using (StreamWriter SW = File.AppendText(newPath))
+                        //{
+                        //    //Write line
+                        //    SW.WriteLine(line);
+                        //
+                        //}
                     }
                     else
                     {
@@ -52,6 +57,7 @@ namespace csvReader
                         }
                         else
                         {
+
                             temp = temp.Concat(split).ToArray<String>();
                         }
                         if (temp.Length == numberOfColumns)
