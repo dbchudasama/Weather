@@ -1,4 +1,4 @@
-﻿DECLARE @INPUT_FILE string = @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for HackFest_Reformatted.csv";
+﻿DECLARE @INPUT_FILE string = @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest_CURRENT_USE.csv";
 
 @DiscData = 
     EXTRACT 
@@ -25,7 +25,7 @@
         [Grid Disconnection duration] string,
         [Grid disconnection scheduled] string,
         [Total Production Losses] string
-    FROM @INPUT_FILE USING Extractors.Text(delimiter: '\t', skipFirstNRows: 1);
+    FROM @INPUT_FILE USING Extractors.Text(delimiter: '{', skipFirstNRows: 1);
 
 OUTPUT @DiscData
 TO @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest Extracted.csv"

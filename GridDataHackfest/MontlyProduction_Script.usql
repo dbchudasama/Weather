@@ -1,17 +1,24 @@
 ﻿DECLARE @INPUT_FILE string = @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest_Monthly_USE.csv";
 
-
 @MonthlyData =
     EXTRACT
-        incident string,
-        [incident - client] string,
-        production string,
-        year string,
-        month string
-    FROM @INPUT_FILE USING Extractors.Csv(encoding: Encoding.UTF8, silent: true);
+        IncidentRef string, 
+        IncidentSiteName string,
+        IncidentClient string,
+        IncidentType string,
+        Incident string,
+        Year string,
+        Month string,
+        Production string
+    FROM @INPUT_FILE USING Extractors.Text(delimiter: '{', silent: true);
 
-@AnnualLosses = 
-    SELECT incident, 
-           [incident - client] AS incidentClient
-           
-    FROM @MonthlyData
+@Client =
+    SELECT SUM(double.Parse(Production, NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint)) AS Losses, IncidentClient, Incident, Year 
+        FROM @MonthlyData
+        WHERE Year == "2015" AND IncidentClient == "Foresight Group"
+        GROUP BY IncidentClient, Incident, Year;
+    
+OUTPUT @Client
+TO @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest_Monthly_Losses.csv"
+USING Outputters.Csv(outputHeader: true, quoting : true);
+         
