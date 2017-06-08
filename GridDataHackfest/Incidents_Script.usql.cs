@@ -8,5 +8,11 @@ using System.Text;
 
 namespace GridDataHackfest
 {
-    
+    public class CustomClass
+    {
+        public static int ConvertToOne(string Reference)
+        {
+            return 1;
+        }
+    }
 }

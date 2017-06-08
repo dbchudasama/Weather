@@ -8,5 +8,16 @@ using System.Text;
 
 namespace GridDataHackfest
 {
-    
+    public class CustomClass
+    {
+        public static Double? dbl_TryParse_USQL(string doubleString)
+        {
+            Double doubleValue;
+
+            if (Double.TryParse(doubleString, out doubleValue))
+                return doubleValue;
+            else
+                return null;
+        }
+    }
 }
