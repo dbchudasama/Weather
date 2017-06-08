@@ -28,18 +28,19 @@
     FROM @INPUT_FILE USING Extractors.Tsv(skipFirstNRows: 1);
 
  @Hackfest =
-    SELECT Client, IncidentRef, Incident,
+    SELECT Client, IncidentRef, Incident, GridDisconnectionScheduled,
            DateTime.ParseExact(IncidentDate, "dd/MM/yyyy", null).Day AS IncidentDay,
            DateTime.ParseExact(IncidentDate, "dd/MM/yyyy", null).Month AS IncidentMonth,
            DateTime.ParseExact(IncidentDate, "dd/MM/yyyy", null).Year AS IncidentYear
         FROM @DiscData;
 
   @Incidents =
-    SELECT Client, IncidentMonth, IncidentYear, 
+    SELECT Client, IncidentMonth, IncidentYear, GridDisconnectionScheduled AS ScheduledOrUnscheduled,
            AVG(GridDataHackfest.CustomClass.ConvertToOne(IncidentRef)) AS AverageNumberOfIncidents
     FROM @Hackfest
-    GROUP BY Client, IncidentMonth, IncidentYear;
+    WHERE GridDisconnectionScheduled == "unscheduled"
+    GROUP BY Client, IncidentMonth, IncidentYear, GridDisconnectionScheduled;
 
 OUTPUT @Incidents
-TO @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest_AVGIncident.csv"
+TO @"C:\Users\gujra\OneDrive\Documents\Weather_Richard\Grid Disconnection Data for Hackfest_IncidentUnscheduled.csv"
 USING Outputters.Csv(outputHeader: true, quoting : true);
