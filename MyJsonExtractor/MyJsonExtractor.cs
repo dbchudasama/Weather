@@ -11,68 +11,59 @@ using Newtonsoft.Json.Linq;
 
 namespace MyJsonExtractor
 {
-	[SqlUserDefinedExtractor]
+    //Implementing Interface IExtractor
+	public class CustomCSVExtractor : IExtractor
+    {
+        //Overriding interface method 'Extract'
+        public override IEnumerable<IRow> Extract(IUnstructuredReader input, IUpdatableRow output)
+        {
+            IList<String> jsonObjectsAsString = new List<String>();
+            string jsonPath;
+            
+            //Read in the JSON File using the JSONTextReader as provided by Newtonsoft.json Library
+            using (JsonTextReader jtr = new JsonTextReader(new StreamReader(input.BaseStream)))
+            {
+                //While the json reader reads to the end of the json file
+                while (jtr.Read())
+                {
+                        var jsonValue = jtr.Value;
+                        //Error Handling. Value pulls back the text value of the JToken in subject
+                        if (jsonValue == null)
+                        {
+                            //Missing Value
+                            Console.WriteLine("Unable to return the text value for:" + jsonValue + ". Are you missing a Json Value?");
+                        }
+                        else
+                        {
 
-	//Implementing interface IExtractor
-	public class MyJsonExtractor : IExtractor
+                            //Creating a Json Token. (The Load method will achieve this for us)
+                            var jsonToken = JToken.Load(jtr);
 
-	{
-		private string pathOfRow;
+                            //SelectTokens allow s the user to query JSON using a single string path to a desired JToken. This makes dynamic queries really easy
+                            //jsonToken.SelectTokens(jsonPath).OfType<JObject>();
 
-		//Constructor for MyJsonExtractor
-		public MyJsonExtractor(string pathOfRow = null)
-		{
-			this.pathOfRow = pathOfRow;
-			
-		}
-		
-		//Here overriding IEnumerable as we wish to use collections
-		public override IEnumerable<IRow> Extract(IUnstructuredReader input, IUpdatableRow output)
-		{
+                            //Creating a new instance of JsonSerializer
+                            JsonSerializer js = new JsonSerializer();
 
-			//The column deliminator
-			char col_delim = ',';
-			String line;
+                            //Deserialising json structure 
+                            string json = js.Deserialize<String>(jtr);
 
-			var reader = new StreamReader(input.BaseStream);
-			
-			while ((line = reader.ReadLine()) != null)
-			{
-				//Parse json a single token at a time
-				var token = line.Split(col_delim);
-				
-				//Iterating over Objects of type JObject. Objects are here represented as rows.
-				//foreach (JObject j in ChildObject(token, this.pathOfRow) )
-				{
-					// All fields are represented as columns
-					//this.RowConversion(o, output);
-				}
-				
+                            //Now adding the deserialised json to a List
+                            jsonObjectsAsString.Add(json);
 
-				yield return output.AsReadOnly();
-			}
-		}
+                            //Iterate over each JSON Object
+                            foreach (String jsonStringObject in jsonObjectsAsString)
+                            {
+                                //Set this as the output as a Key, Value pair
+                                output.Set<string>(jsonObjectsAsString.Count, jsonStringObject);
+                            }
+                        }
+                }
+            }
 
-		private static IEnumerable<JObject> ChildObject(JToken root, string path)
-		{
-			// Path specified
-			if (!string.IsNullOrEmpty(path))
-			{
-				return root.SelectTokens(path).OfType<JObject>();
-			}
-
-			// Single JObject
-			var r = root as JObject;
-			if (r != null)
-			{
-				return new[] { r };
-			}
-
-			// Multiple JObjects
-			return root.Children().OfType<JObject>();
-		}
-
-
-	}
+            //Output as ReadOnly
+            yield return output.AsReadOnly();
+        }
+    }
 
 }
